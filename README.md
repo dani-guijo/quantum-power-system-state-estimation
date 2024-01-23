@@ -6,3 +6,17 @@ State estimation is a crucial task in power system monitoring, especially during
 
 ## Data
 Most of the examples in this project were extracted from the book [_Power System State Estimation: Theory and Implementation_](https://www.researchgate.net/publication/259296629_Power_System_State_Estimation_Theory_and_Implementation) by Ali Abur and Antonio Gómez-Expósito.
+
+## Usage
+To create the Docker image and run this repository in a container, open a terminal and run:
+```
+docker build . -t quantum-power-system-state-estimation
+```
+To run the image:
+```
+docker run quantum-power-system-state-estimation
+```
+You should see the following:
+```
+Test successful!
+```
