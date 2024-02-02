@@ -1,4 +1,5 @@
 from data.power_system import string_matrix, PowerSystem
+import numpy as np
 
 
 if __name__ == "__main__":
@@ -25,4 +26,3 @@ if __name__ == "__main__":
     power_system = PowerSystem(Z, R, X, edges)
 
     power_system.describe()
-    
