@@ -1,6 +1,21 @@
 import numpy as np
 
 
+def string_matrix(A):
+    col_widths = [max(len(str(item)) for item in col) for col in zip(*A)]
+
+    # Create the format string with the column alignments
+    format_str = ''
+    for row in A:
+        format_str_aux = '{:<%d}  ' % col_widths[0]
+        for width in col_widths[1:-1]:
+            format_str_aux += ' {:^%d} ' % width
+        format_str_aux += ' {:>%d} ' % col_widths[-1]
+        format_str += format_str_aux.format(*row)
+        format_str += '\n'
+    return format_str
+
+
 class PowerSystem():
     """
     Class to create a Power System scenario.
@@ -61,6 +76,7 @@ class PowerSystem():
                     admitance[i, j] = 1 / (R[i, j] + 1j * X[i, j])
 
         return admitance
+
     
     def get_bus_admitance(self, admitance):
         '''
@@ -131,6 +147,6 @@ class PowerSystem():
         print('Reactance Matrix:\n')
         print(string_matrix(self.X.round(4)))
         print('Admitance Matrix:\n')
-        print(string_matrix(self.Admitance.round(4)))
+        print(string_matrix(self.admitance.round(4)))
         print('Bus Admitance Matrix:\n')
-        print(string_matrix(self.Bus_Admitance.round(4)))
+        print(string_matrix(self.bus_admitance.round(4)))
