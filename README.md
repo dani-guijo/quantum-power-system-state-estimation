@@ -10,13 +10,52 @@ Most of the examples in this project were extracted from the book [_Power System
 ## Usage
 To create the Docker image and run this repository in a container, open a terminal and run:
 ```
-docker build . -t quantum-power-system-state-estimation
+docker build . -t quantum-psse
 ```
 To run the image:
 ```
-docker run quantum-power-system-state-estimation
+docker run quantum-psse
 ```
 You should see the following:
 ```
-Test successful!
+
+                        Measurements
+
+Number of measurements: 8
+
+----------------------------------------------
+Measurement |  Type  | Value (pu) | Sigma (pu)
+----------------------------------------------
+1           | P_{12} |   0.888    |      0.008
+2           | P_{13} |   1.173    |      0.008
+3           | P_{2}  |   -0.501   |       0.01
+4           | Q_{12} |   0.568    |      0.008
+5           | Q_{13} |   0.663    |      0.008
+6           | Q_{2}  |   -0.286   |       0.01
+7           |  V_1   |   1.006    |      0.004
+8           |  V_2   |   0.968    |      0.004
+----------------------------------------------
+Resistance Matrix:
+
+0.0    0.01  0.02
+0.01   0.0   0.03
+0.02   0.03   0.0
+
+Reactance Matrix:
+
+0.0    0.03  0.05
+0.03   0.0   0.08
+0.05   0.08   0.0
+
+Admitance Matrix:
+
+0j                      (10-30j)       (6.8966-17.2414j)
+(10-30j)                   0j          (4.1096-10.9589j)
+(6.8966-17.2414j)   (4.1096-10.9589j)                 0j
+
+Bus Admitance Matrix:
+
+(33.7931-94.4828j)       (-10+30j)       (-6.8966+17.2414j)
+(-10+30j)            (28.2192-81.9178j)  (-4.1096+10.9589j)
+(-6.8966+17.2414j)   (-4.1096+10.9589j)  (22.0123-56.4006j)
 ```
