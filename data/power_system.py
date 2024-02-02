@@ -72,7 +72,7 @@ class PowerSystem():
         admitance = np.zeros((self.n_nodes, self.n_nodes), dtype=np.complex128)
         for i in range(self.n_nodes):
             for j in range(self.n_nodes):
-                if R[i, j] != 0 or X[i, j] != 0:
+                if R[i, j] != 0.00 or X[i, j] != 0.00:
                     admitance[i, j] = 1 / (R[i, j] + 1j * X[i, j])
 
         return admitance
