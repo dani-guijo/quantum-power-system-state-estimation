@@ -78,3 +78,59 @@ class PowerSystem():
 
         bus_admitance = bus_admitance + np.diag(np.sum(admitance, axis=1))
         return bus_admitance
+
+
+    def describe(self):
+        '''
+        Print Measurements Description
+
+        Z: Array of measurements (type, nodes, value, R)
+        A: Matrix of Admitance
+        
+
+            Type | Description | 
+            -----|------------
+            0    | Voltage
+            1    | Power Flow between two nodes (Real)
+            2    | Power Flow between two nodes (Imaginary)
+            3    | Power injection at a node (Real)
+            4    | Power injection at a node (Imaginary)
+
+        '''
+        types = [lambda i: f'V_{i}', lambda i, j: f'P_{{{i}{j}}}', lambda i, j: f'Q_{{{i}{j}}}', lambda i: f'P_{{{i}}}', lambda i: f'Q_{{{i}}}']
+        print('\n{:^60}\n'.format('Measurements'))
+        print(f'Number of measurements: {self.n_measurements}')
+        print()
+
+        data = [['Measurement', 'Type', 'Value (pu)', 'Sigma (pu)']]
+        for i, (type, nodes, value, sigma) in enumerate(self.Z):
+            data.append([i+1, types[type](*nodes), value, sigma])
+
+        # Find the maximum width for each column
+        col_widths = [max(len(str(item)) for item in col) for col in zip(*data)]
+
+        # Create the format string with different alignments
+        format_str = '{:<%d} | ' % col_widths[0]
+        for i, width in enumerate(col_widths[1:-1]):
+            i += 1
+            format_str += '{:^%d}' % width
+            if i < len(col_widths)-1:
+                format_str += ' | '
+        format_str += '{:>%d}' % col_widths[-1]
+
+        print('-' * len(format_str.format(*data[0])))
+        for i, row in enumerate(data):
+            print(format_str.format(*row))
+            if i == 0:
+                print('-' * len(format_str.format(*row)))
+        
+        print('-' * len(format_str.format(*row)))
+
+        print('Resistance Matrix:\n')
+        print(string_matrix(self.R.round(4)))
+        print('Reactance Matrix:\n')
+        print(string_matrix(self.X.round(4)))
+        print('Admitance Matrix:\n')
+        print(string_matrix(self.Admitance.round(4)))
+        print('Bus Admitance Matrix:\n')
+        print(string_matrix(self.Bus_Admitance.round(4)))
