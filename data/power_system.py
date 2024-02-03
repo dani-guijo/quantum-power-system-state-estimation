@@ -263,4 +263,56 @@ class PowerSystem():
         return H
 
 
+    def get_G(self, H):
+        '''
+        Get the G matrix for the measurements
+
+        H: Jacobian H matrix
+        '''
+        return H.T @ self.W @ H
+
+
+    def calculate_h(self, x, z_type, z_nodes, gs=None):
+        '''
+        Calculate the h vector for the measurements
+
+        x: Array of variables (theta, V)
+        z_type: int with the type of measurement
+        z_nodes: array with the nodes of the measurement
+        gs: Array with the shunt admittance of each node
+        '''
+        n_nodes = self.n_nodes
+        A = self.admitance
+        bus_admitance = self.bus_admitance
+
+        thetas = np.array([0] + list(x[:n_nodes-1]))
+        V_mag = x[n_nodes-1:]
+        V = x[n_nodes-1:] * np.exp(1j * thetas)
+        z_nodes = np.array(z_nodes) - 1
+        gs = np.zeros(n_nodes, dtype=np.complex128) if gs is None else gs
+
+        if z_type == 0:
+            # Voltage
+            return np.abs(V[z_nodes[0]])
+
+        if z_type == 1:
+            # Power Flow between two nodes (Real)
+            i, j = z_nodes
+            return (V_mag[i] ** 2 * (A[i, j].conjugate() + gs[i].conjugate()) - V[i] * V[j].conjugate() * A[i, j].conjugate()).real
+        if z_type == 2:
+            # Power Flow between two nodes (Imaginary)
+            i, j = z_nodes
+            return (V_mag[i] ** 2 * (A[i, j].conjugate() + gs[i].conjugate()) - V[i] * V[j].conjugate() * A[i, j].conjugate()).imag
+        
+        if z_type == 3: 
+            # Power injection at a node (Real)
+            i = z_nodes[0]
+            return (V[i] * np.sum(V.conjugate() * bus_admitance[i, :].conjugate()) - 1/2 * V_mag[i] ** 2 * bus_admitance[i, i].conjugate()).real
+        
+        if z_type == 4:
+            # Power injection at a node (Imaginary)
+            i = z_nodes[0]
+            return (V[i] * np.sum(V.conjugate() * bus_admitance[i, :].conjugate()) - 1/2 * V_mag[i] ** 2 * bus_admitance[i, i].conjugate()).imag
+    
+
     
