@@ -1,4 +1,5 @@
 import numpy as np
+from solvers.solvers import Solver
 
 
 def string_matrix(A):
@@ -18,7 +19,7 @@ def string_matrix(A):
 
 class PowerSystem():
     """
-    Class to create a Power System scenario.
+    Class to create a Power System scenario
     """
 
     def __init__(self,
@@ -29,7 +30,7 @@ class PowerSystem():
                  ):
 
         '''
-        Initializes a Power System.
+        Initializes a Power System
 
         Z: Array of measurements (type, nodes, value, sigma)
         
@@ -390,3 +391,31 @@ class PowerSystem():
                 print('-' * len(format_str.format(*row)))
         
         print('-' * len(format_str.format(*row)))
+
+
+    def estimate_state(self, x0=None, solver: Solver):
+        '''
+        Estimates the state of the PowerSystem
+
+        x0: Initial state of the power system
+        solver: Algorithm to solve the linear system
+        '''
+
+        x0 = np.concatenate((np.zeros(self.n_nodes - 1), np.ones(self.n_nodes))) if x0 is None else x0
+        x = x0.copy()
+
+        x, r, G, H, h = solver.solve(x)
+
+        thetas = x[:self.n_nodes-1]
+        V_mag = x[self.n_nodes-1:]
+
+        results_table = [f'Theta {i+1}' for i in range(self.n_nodes-1)] + [f'V {i+1}' for i in range(self.n_nodes)]
+        results = np.concatenate((thetas, V_mag))
+        results = np.array([f'{value:.3f}' for value in results])
+        results = np.stack((results_table, results), axis=1)
+
+        print(string_matrix(results))
+        self.describe_h(h.round(3))
+
+        return x, r, G, H, h
+        
