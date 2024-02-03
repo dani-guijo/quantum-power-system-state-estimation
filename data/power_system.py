@@ -150,3 +150,93 @@ class PowerSystem():
         print(string_matrix(self.admitance.round(4)))
         print('Bus Admitance Matrix:\n')
         print(string_matrix(self.bus_admitance.round(4)))
+
+
+    def get_measurements_jacobian(self, x, z_type, z_nodes, gs=None):
+        '''
+        Get the Jacobian H matrix row for the measurements
+
+        x: Array of variables (theta, V)
+        z_type: int with the type of measurement
+        z_nodes: array with the nodes of the measurement
+        gs: Array with the shunt admittance of each node
+        '''
+        n_nodes = self.n_nodes
+        A = self.admitance
+        bus_admitance = self.bus_admitance
+
+        thetas = np.array([0] + list(x[:n_nodes-1]))
+        V_mag = x[n_nodes-1:]
+        V = x[n_nodes-1:] * np.exp(1j * thetas)
+        z_nodes = np.array(z_nodes) - 1
+        gs = np.zeros(n_nodes, dtype=np.complex128) if gs is None else gs
+
+        row = np.zeros(len(x), dtype=np.float64)
+
+        if z_type == 0:
+            # Voltage
+            row[z_nodes[0] + n_nodes - 1] = 1
+            return row
+
+        if z_type == 1:
+            # Power Flow between two nodes (Real)
+            i, j = z_nodes
+            if i != 0:
+                row[i - 1] = (-1j * V[i]*V[j].conjugate() * A[i, j].conjugate()).real
+            if j != 0:
+                row[j - 1] = (1j * V[i]*V[j].conjugate() * A[i, j].conjugate()).real
+            
+            row[i + n_nodes - 1] = (2 * V_mag[i] * ( A[i, j].conjugate() + gs[i].conjugate()) - V_mag[j] * A[i, j].conjugate() * np.exp(1j * (thetas[i] - thetas[j]))).real
+            row[j + n_nodes - 1] = ( - V_mag[i] * A[i, j].conjugate() * np.exp(1j * (thetas[i] - thetas[j]))).real
+
+            return row
+        
+        if z_type == 2:
+            # Power Flow between two nodes (Imaginary)
+            i, j = z_nodes
+            if i != 0:
+                row[i - 1] = (-1j * V[i]*V[j].conjugate() * A[i, j].conjugate()).imag
+            if j != 0:
+                row[j - 1] = (1j * V[i]*V[j].conjugate() * A[i, j].conjugate()).imag
+            
+            row[i + n_nodes - 1] = (2 * V_mag[i] * ( A[i, j].conjugate() + gs[i].conjugate()) - V_mag[j] * A[i, j].conjugate() * np.exp(1j * (thetas[i] - thetas[j]))).imag
+            row[j + n_nodes - 1] = ( - V_mag[i] * A[i, j].conjugate() * np.exp(1j * (thetas[i] - thetas[j]))).imag
+
+            return row
+        
+        if z_type == 3: 
+            # Power injection at a node (Real)
+            i = z_nodes[0]
+            for j in range(n_nodes):
+                if i == j:
+                    continue
+                if i != 0:
+                    row[i - 1] += (1j * V[i]*V[j].conjugate() * bus_admitance[i, j].conjugate()).real
+                if j != 0:
+                    row[j - 1] = (-1j * V[i]*V[j].conjugate() * bus_admitance[i, j].conjugate()).real
+                row[i + n_nodes - 1] += (V_mag[j] * bus_admitance[i, j].conjugate() * np.exp(1j * (thetas[i] - thetas[j]))).real
+                row[j + n_nodes - 1] =  (V_mag[i] * bus_admitance[i, j].conjugate() * np.exp(1j * (thetas[i] - thetas[j]))).real
+            
+            row[i + n_nodes - 1] += V_mag[i] * bus_admitance[i, i].real
+
+            return row
+        
+        if z_type == 4:
+            # Power injection at a node (Imaginary)
+            i = z_nodes[0]
+            for j in range(n_nodes):
+                if i == j:
+                    continue
+                if i != 0:
+                    row[i - 1] += (1j * V[i]*V[j].conjugate() * bus_admitance[i, j].conjugate()).imag
+                if j != 0:
+                    row[j - 1] = (-1j * V[i]*V[j].conjugate() * bus_admitance[i, j].conjugate()).imag
+                row[i + n_nodes - 1] += (V_mag[j] * bus_admitance[i, j].conjugate() * np.exp(1j * (thetas[i] - thetas[j]))).imag
+                row[j + n_nodes - 1] =  (V_mag[i] * bus_admitance[i, j].conjugate() * np.exp(1j * (thetas[i] - thetas[j]))).imag
+
+            row[i + n_nodes - 1] -= V_mag[i] * bus_admitance[i, i].imag
+
+            return row
+        
+        # TODO: Add the current measurements
+        return row
