@@ -240,3 +240,27 @@ class PowerSystem():
         
         # TODO: Add the current measurements
         return row
+
+
+    def get_H(self, x):
+        '''
+        Get the Jacobian H matrix for the measurements
+
+        x: Array of variables (theta, V)
+        '''
+        Z = self.Z
+        A = self.admitance
+        bus_admitance = self.bus_admitance
+
+        n_measurements = len(Z)
+        n_nodes = len(A)
+        n_variables = 2 * n_nodes - 1 # Number of variables (V and theta for each node minus the reference node)
+        H = np.zeros((n_measurements, n_variables), dtype=np.float64)
+
+        for i, (type, nodes, value, sigma) in enumerate(Z):
+            H[i] = self.get_measurements_jacobian(x, type, nodes)
+
+        return H
+
+
+    
