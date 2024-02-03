@@ -1,5 +1,5 @@
 import numpy as np
-from data.power_system import PowerSystem
+# from data.power_system import PowerSystem
 
 
 class Solver():
@@ -28,7 +28,7 @@ class WLS(Solver):
     '''
 
     def solve(self,
-              power_system: PowerSystem,
+              power_system,#: PowerSystem,
               x0: np.array):
         '''
         Solves the system
@@ -38,15 +38,16 @@ class WLS(Solver):
         '''
 
         for i in range(self.max_iter):
-            H = power_system.get_H(x)
-            h = power_system.get_h(x)
+            H = power_system.get_H(x0)
+            h = power_system.get_h(x0)
             r = power_system.get_residuals(h)
             G = power_system.get_G(H)
 
             dx = np.linalg.inv(G) @ H.T @ power_system.W @ r
-            x = x + dx
+            x0 = x0 + dx
 
-            if np.all(np.abs(dx) < convergence):
+            if np.all(np.abs(dx) < self.tol):
                 break
+        x = x0
 
         return x, r, G, H, h

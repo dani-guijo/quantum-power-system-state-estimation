@@ -404,7 +404,7 @@ class PowerSystem():
         x0 = np.concatenate((np.zeros(self.n_nodes - 1), np.ones(self.n_nodes))) if x0 is None else x0
         x = x0.copy()
 
-        x, r, G, H, h = solver.solve(x)
+        x, r, G, H, h = solver.solve(self, x)
 
         thetas = x[:self.n_nodes-1]
         V_mag = x[self.n_nodes-1:]

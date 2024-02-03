@@ -1,4 +1,5 @@
 from data.power_system import string_matrix, PowerSystem
+from solvers.solvers import WLS
 import numpy as np
 
 
@@ -22,9 +23,11 @@ if __name__ == "__main__":
                  [0.05, 0.08, 0.00]])
 
     edges = [(1,2), (1,3), (2,3)]
+
+    x0 = np.zeros(5)
     
     power_system = PowerSystem(Z, R, X, edges)
 
-    h = power_system.get_h(x)
+    wls = WLS()
 
-    power_system.describe_h(h)
+    x, r, G, H, h = power_system.estimate_state(solver=wls)
