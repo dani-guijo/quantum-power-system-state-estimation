@@ -10,13 +10,35 @@ Most of the examples in this project were extracted from the book [_Power System
 ## Usage
 To create the Docker image and run this repository in a container, open a terminal and run:
 ```
-docker build . -t quantum-power-system-state-estimation
+docker build . -t quantum-psse
 ```
 To run the image:
 ```
-docker run quantum-power-system-state-estimation
+docker run quantum-psse
 ```
-You should see the following:
+You should see something similar to the following:
 ```
-Test successful!
+Theta 1   -0.022 
+Theta 2   -0.048
+V 1        1.000
+V 2        0.974
+V 3        0.944
+
+
+                   Estimated Measurements
+
+Number of measurements: 8
+
+----------------------------------------------------------
+Measurement |  Type  | Value (pu) | h (pu) | residual (pu)
+----------------------------------------------------------
+1           | P_{12} |   0.888    | 0.893  |        -0.005
+2           | P_{13} |   1.173    | 1.171  |         0.002
+3           | P_{2}  |   -0.501   | -0.496 |        -0.005
+4           | Q_{12} |   0.568    | 0.559  |         0.009
+5           | Q_{13} |   0.663    | 0.668  |        -0.005
+6           | Q_{2}  |   -0.286   | -0.298 |         0.012
+7           |  V_1   |   1.006    |  1.0   |         0.006
+8           |  V_2   |   0.968    | 0.974  |        -0.006
+----------------------------------------------------------
 ```
