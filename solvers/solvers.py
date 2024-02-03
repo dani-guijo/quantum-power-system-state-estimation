@@ -28,7 +28,7 @@ class WLS(Solver):
     '''
 
     def solve(self,
-              power_system,#: PowerSystem,
+              power_system,
               x0: np.array):
         '''
         Solves the system
