@@ -25,4 +25,6 @@ if __name__ == "__main__":
     
     power_system = PowerSystem(Z, R, X, edges)
 
-    power_system.describe()
+    h = power_system.get_h(x)
+
+    power_system.describe_h(h)
