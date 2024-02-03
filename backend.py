@@ -23,8 +23,6 @@ if __name__ == "__main__":
                  [0.05, 0.08, 0.00]])
 
     edges = [(1,2), (1,3), (2,3)]
-
-    x0 = np.zeros(5)
     
     power_system = PowerSystem(Z, R, X, edges)
 
