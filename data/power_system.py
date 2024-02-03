@@ -315,4 +315,31 @@ class PowerSystem():
             return (V[i] * np.sum(V.conjugate() * bus_admitance[i, :].conjugate()) - 1/2 * V_mag[i] ** 2 * bus_admitance[i, i].conjugate()).imag
     
 
-    
+    def get_h(self, x):
+        '''
+        Get the h vector for the measurements
+
+        x: Array of variables (theta, V)
+        '''
+        n_measurements = self.n_measurements
+        Z = self.Z
+        A = self.admitance
+        bus_admitance = self.bus_admitance
+
+        h = np.zeros(n_measurements, dtype=np.float64)
+
+        for i, (type, nodes, value, sigma) in enumerate(Z):
+            h[i] = self.calculate_h(x, type, nodes)
+
+        return h
+
+
+    def get_residuals(self, h):
+        '''
+        Get the residuals vector for the measurements
+
+        h: h vector for the measurements
+        x: Array of variables (theta, V)
+        '''
+        residuals = self.Z_values - h
+        return residuals
