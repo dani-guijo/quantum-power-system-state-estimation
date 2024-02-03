@@ -393,7 +393,7 @@ class PowerSystem():
         print('-' * len(format_str.format(*row)))
 
 
-    def estimate_state(self, x0=None, solver: Solver):
+    def estimate_state(self, solver: Solver, x0=None):
         '''
         Estimates the state of the PowerSystem
 
@@ -418,4 +418,3 @@ class PowerSystem():
         self.describe_h(h.round(3))
 
         return x, r, G, H, h
-        
