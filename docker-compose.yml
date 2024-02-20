@@ -7,4 +7,9 @@ services:
     ports:
       - '8888:8888'
     volumes:
-      - ./notebooks:/app
+      - ./experiments
+
+  dev:
+    build:
+      context: .
+      dockerfile: dev.dockerfile
