@@ -5,4 +5,5 @@ RUN pip3 install --upgrade pip && pip3 install -r requirements.txt
 
 COPY . .
 
-CMD [ "python3", "backend.py"]
+# Set the default command to run Jupyter Notebook
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
