@@ -7,7 +7,7 @@ services:
     ports:
       - '8888:8888'
     volumes:
-      - ./experiments
+      - ./quantum-power-system-state-estimation/experiments
 
   dev:
     build:
