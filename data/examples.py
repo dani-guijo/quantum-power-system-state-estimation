@@ -1,11 +1,11 @@
 import numpy as np
 
-def create_example(n_nodes=3):
+def create_example(n_buses=3):
     """
-    Returns an example of a PowerSystem object with 3 nodes (AVAILABLE)
+    Returns an example of a PowerSystem object with 3 buses (AVAILABLE)
     Creates a PowerSystem object with the specified parameters (NOT AVAILABLE)
 
-    n_nodes: Number of nodes in the PowerSystem
+    n_buses: Number of buses in the PowerSystem
 
     return: PowerSystem
     """
