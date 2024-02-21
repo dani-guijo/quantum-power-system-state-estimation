@@ -3,7 +3,7 @@ services:
   playground:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
     ports:
       - '8888:8888'
     volumes:
@@ -12,7 +12,7 @@ services:
   test:
     build:
       context: .
-      dockerfile: dev.dockerfile
+      dockerfile: docker/dev.dockerfile
 
 volumes:
   experiments:
