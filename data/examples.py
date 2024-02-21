@@ -1,4 +1,5 @@
 import numpy as np
+from data.power_system import PowerSystem
 
 def create_example(n_buses=3):
     """
