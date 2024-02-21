@@ -10,11 +10,11 @@ Most of the examples in this project were extracted from the book [_Power System
 ## Usage
 To create the Docker image and run this repository in a container, open a terminal and run:
 ```
-docker build . -t quantum-psse
+docker compose up --build
 ```
-To run the image:
+Then click on the link to access the Jupyter server and start running experiments. To try a test experiment run:
 ```
-docker run quantum-psse
+docker compose run test
 ```
 You should see something similar to the following:
 ```
