@@ -7,9 +7,12 @@ services:
     ports:
       - '8888:8888'
     volumes:
-      - ./quantum-power-system-state-estimation/experiments
+      - experiments:/quantum-power-system-state-estimation
 
-  dev:
+  test:
     build:
       context: .
       dockerfile: dev.dockerfile
+
+volumes:
+  experiments:
