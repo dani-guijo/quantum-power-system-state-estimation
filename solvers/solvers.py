@@ -1,5 +1,5 @@
 import numpy as np
-from VQLS import VQLS
+from solvers.VQLS import VQLS
 # from data.power_system import PowerSystem
 
 
@@ -63,7 +63,10 @@ class QWLS(Solver):
                 n_shots=10**6,
                 steps=30,
                 learning_rate=0.8,
-                q_delta=0.001):
+                q_delta=0.001,
+                gamma=0.005,
+                best_weights_path='data/weights/',
+                **kwargs):
         '''
         Initializes the solver
         
@@ -75,7 +78,7 @@ class QWLS(Solver):
         learning_rate: The learning rate to be used in the optimization
         q_delta: The step size to be used in the finite difference method
         '''
-        super().__init__()
+        super().__init__(**kwargs)
 
         self.variational_block = variational_block
         self.weights_shape = weights_shape
@@ -83,7 +86,14 @@ class QWLS(Solver):
         self.steps = steps
         self.learning_rate = learning_rate
         self.q_delta = q_delta
-        self.vqls = VQLS(variational_block=self.variational_block, weights_shape=self.weights_shape, n_shots=self.n_shots, steps=self.steps, learning_rate=self.learning_rate, q_delta=self.q_delta)
+        self.vqls = VQLS(variational_block=self.variational_block,
+                         weights_shape=self.weights_shape,
+                         n_shots=self.n_shots,
+                         steps=self.steps,
+                         learning_rate=self.learning_rate,
+                         q_delta=self.q_delta,
+                         gamma=gamma,
+                         best_weights_path=best_weights_path)
 
     def solve(self,
               power_system,
@@ -106,21 +116,19 @@ class QWLS(Solver):
 
             tk = H.T @ power_system.W @ r
 
-            self.vqls.set_problem(G_normalized, tk, tol=self.tol)
+            self.vqls.set_problem(G_normalized, tk, tol=self.tol, iter=i)
 
             weights = self.vqls.optimize()
+            dx_res = self.vqls.get_x(weights).real[:len(tk)]
 
-            dx = self.vqls.get_x(weights)
-            b = G @ dx
-            b_norm = 0
-            for i in range(len(b)):
-                if b[i] != 0 and tk[i] != 0:
-                    b_norm = tk[i] / b[i]
-                    break
-            dx = dx * b_norm
+            b_new = G @ dx_res
+            b_new_norm = np.linalg.norm(b_new)
+            dx_correction_norm = self.vqls.b_norm / b_new_norm
 
-            x0 = x0 + dx
+            dx = dx_res * dx_correction_norm
             
+            x0 = x0 + dx
+
             if np.all(np.abs(dx) < self.tol):
                 break
         x = x0

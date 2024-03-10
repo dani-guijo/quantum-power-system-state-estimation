@@ -1,31 +1,23 @@
-from data.power_system import string_matrix, PowerSystem
-from solvers.solvers import WLS
-import numpy as np
+from data.examples import create_example
+from solvers.solvers import WLS, QWLS
 
 
 if __name__ == "__main__":
-
-    Z = [[1, (1,2), 0.888, 0.008],
-         [1, (1,3), 1.173, 0.008],
-         [3, (2,), -0.501, 0.010],
-         [2, (1,2), 0.568, 0.008],
-         [2, (1,3), 0.663, 0.008],
-         [4, (2,), -0.286, 0.010],
-         [0, (1,), 1.006, 0.004],
-         [0, (2,), 0.968, 0.004]]
-
-    R = np.array([[0.00, 0.01, 0.02],
-                 [0.01, 0.00, 0.03],
-                 [0.02, 0.03, 0.00]])
-
-    X = np.array([[0.00, 0.03, 0.05],
-                 [0.03, 0.00, 0.08],
-                 [0.05, 0.08, 0.00]])
-
-    edges = [(1,2), (1,3), (2,3)]
     
-    power_system = PowerSystem(Z, R, X, edges)
+    power_system = create_example(n_buses=3)
 
+    print('\n' + '-'*65)
+    print('Classical WLS'.center(65))
+    print('-'*65 + '\n')
     wls = WLS()
 
     x, r, G, H, h = power_system.estimate_state(solver=wls)
+
+    print('\n' + '-'*65)
+    print('Quantum WLS'.center(65))
+    print('-'*65 + '\n')
+    # No optimization steps, use the best weights saved in the best_weights_path
+    # The tol was set to 6.2e-4 in the QWLS class due to the fact that the best weights were already saved under this tolerance
+    qwls = QWLS(steps=0, tol=6.2e-4)
+
+    x, r, G, H, h = power_system.estimate_state(solver=qwls)
